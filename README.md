@@ -1,5 +1,7 @@
 # Chem-QQBot
 使用python-Flask框架，自建框架使用正反向htyp与go-cqHttp程序通信
+新人自研，有问题请联系QQ：3254806570 - 非诚勿扰
+
 # 已实现功能：
 
 # 框架提供的函数API
