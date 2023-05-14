@@ -2,7 +2,8 @@
 使用python-Flask框架，自建框架使用正反向htyp与go-cqHttp程序通信
 # 已实现功能：
 
-# add()
+# 框架提供的函数API
+## add()
 使用add() - Hook函数 来注册命令事件，与plugins下的插件模块交互
 
 # API命令目录
