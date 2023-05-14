@@ -1,7 +1,7 @@
 import requests
 import json
 
-api_key = 'SWSn4brixEZOHSR-4'
+api_key = 'your key of xingzhi'
 def Change_Date(date,STR):
     L = date.split(STR)
     try:
