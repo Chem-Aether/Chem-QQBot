@@ -5,7 +5,8 @@ import plugins.translate as Translate
 import plugins.WBhot as WB
 import Help
 
-
+import plugins.HJ as HJ
+import plugins.ZW as ZW
 
 from flask import Flask, request
 from flask_frozen import Freezer
@@ -38,12 +39,12 @@ def CQFace(id):
     CQ = f'[CQ:face,id={id}]'
     return CQ
 
-def CQImage(url,type,id):
-    CQ = f'[CQ:image,file={url},type={type},id={id}]'
+def CQImage(url='',id=40000):
+    CQ = f'[CQ:image,file={url},id={id}]'
+    print(CQ)
     return CQ
 
 def CQMusic(type=163,id=5250079):
-
     #id = "004Azgn03TGRIk"
     CQ = f'[CQ:music,type={type},id={id}]'
     return CQ
@@ -111,9 +112,10 @@ add('/fy',Translate.translate)
 add('/rs',WB.get_WbHot)
 add('/yd',YD.creat_String)
 
+add('/hsg',HJ.get_DDL_SX)
+add('/zw',ZW.get_Msg)
 
-
-add('/yy',CQMusic)
+add('/yy',CQImage)
 
 @app.route('/', methods=["POST", "GET"])
 def index():
