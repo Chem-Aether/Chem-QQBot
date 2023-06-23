@@ -1,7 +1,9 @@
+import datetime
+
 import requests
 import json
 
-api_key = 'your key of xingzhi'
+api_key = 'SWSn4brixEZOHSR-4'
 def Change_Date(date,STR):
     L = date.split(STR)
     try:
@@ -16,15 +18,18 @@ def Change_Date(date,STR):
 def get_HourWeather(location='西安',hours=2):
     url = f'https://api.seniverse.com/v3/weather/hourly.json?key={api_key}&location={location}&language=zh-Hans&unit=c&start=0&hours={hours}'
     res = requests.get(url)
+    print(res.text)
+    location_ = json.loads(res.text)['results'][0]['location']['name']
+    tips = f'{location_}未来{hours}小时天气预测如下：\n'
 
-    tips = f'{location}未来{hours}小时天气预测如下：\n'
-    for time,each in enumerate(json.loads(res.text)['results'][0]['hourly'],1):
+    for n_time,each in enumerate(json.loads(res.text)['results'][0]['hourly'],1):
         text = each['text']
         temperature = each["temperature"]
         humidity = each["humidity"]
         wind = each["wind_direction"]
         wind_speed = each["wind_speed"]
-        tips += f'{time}时天气{text}，温度{temperature}℃，相对湿度{humidity}%，风向{wind}，风速{wind_speed}km/h\n'
+        time = (datetime.datetime.now()+ datetime.timedelta(hours = n_time)).strftime('%H:%M:%S')
+        tips += f'{time} 天气{text}，温度{temperature}℃，相对湿度{humidity}%，风向{wind}，风速{wind_speed}km/h\n'
     print(tips)
     return  tips
 
@@ -32,7 +37,8 @@ def get_DayWeather(location='西安',days=3):
     url = f'https://api.seniverse.com/v3/weather/daily.json?key={api_key}&location={location}&language=zh-Hans&unit=c&start=0&days={days}'
     res = requests.get(url)
     #print(res.text)
-    tips = f'{location}未来{days}天天气预测如下：\n'
+    location_ = json.loads(res.text)['results'][0]['location']['name']
+    tips = f'{location_}未来{days}天天气预测如下：\n'
     for each in json.loads(res.text)['results'][0]['daily']:
         date = each['date']
         text_day = each['text_day']
@@ -59,29 +65,22 @@ def get_Today_Culture(start=0):
     lunar_day_name = req['lunar_day_name']
     if start == 0:
         tips = f'今天是{date}，农历{ganzhi_year}{zodiac}年{lunar_month_name}{lunar_day_name}'
-    elif start == -1:
+    elif start == '-1':
         tips = f'昨天是{date}，农历{ganzhi_year}{zodiac}年{lunar_month_name}{lunar_day_name}'
-    elif start ==1:
+    elif start =='1':
         tips = f'明天是{date}，农历{ganzhi_year}{zodiac}年{lunar_month_name}{lunar_day_name}'
     else:
         tips = f'{date}是农历{ganzhi_year}{zodiac}年{lunar_month_name}{lunar_day_name}'
     print(tips)
     return tips
 
-def ad():
-    url = f'https://api.seniverse.com/v4?fields=weather_hourly_1h_global&key={api_key}&locations=beijing'
-    req = json.loads(requests.get(url).text)
-    print(req)
 
-
-L = ['西安','3']
-B = ['2022/1/2']
 if __name__ == "__main__":
-    #get_HourWeather(location='西安',hours=3)
+    get_HourWeather(location='西安',hours=3)
     #get_HourWeather(*L)
     #get_DayWeather(*L)
     print(Change_Date('2000/02/02','/'))
 
+    B=['']
     get_Today_Culture(*B)
 
-    ad()

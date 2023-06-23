@@ -1,3 +1,5 @@
+import re
+
 import requests
 from bs4 import BeautifulSoup
 
@@ -14,46 +16,60 @@ def get_Link(name):
         print('查无此药')
     return link
 
-
 def get_Meg(name='知母'):
+    url = 'https://db2.ouryao.com/yd2020/'+ get_Link(name)
+    req=requests.get(url=url)
+    req = req.text.replace('<sub>','').replace('</sub>','').replace('\u3000','').replace('\r\n','').replace('<sup>','').replace('</sup>','').replace('</b><b>','')
+    soup = BeautifulSoup(req,features="html.parser")
+
+    table = soup.find(class_="cms_list").div
+
+    #前缀文字列表
+    a = ['【中文名称】', table.contents[1].string, '【拼音名称】', table.contents[3].string, '【英文名称】',table.contents[5].string]
+    a = ['无' if i is None else i for i in a]
+    #合并总表
+    S = [i.string for i in table.pre.contents if i.string!=None]
+    if re.search(r'[【](.*)[】]', S[0]):
+        S = a+S
+    else:
+        a.append('【简介】')
+        S = a + S
+    #print(S)
+    #规整列表
+    ALL=[]
+    i=0
     try:
-        url = 'https://db2.ouryao.com/yd2020/'+ get_Link(name)
-        req=requests.get(url=url)
-        req = req.text.replace('<sub>','').replace('</sub>','').replace('\u3000\u3000','').replace('\r\n','').replace('<sup>','').replace('</sup>','').replace('</b><b>','')
-        soup = BeautifulSoup(req,features="html.parser")
+        while i<(len(S)-1):
+            t = S[i]
+            n=''
+            for each in S[i+1:]:
+                if re.search(r'[【](.*)[】]', each):
+                    i+=1
+                    break
+                else:
+                    n+=each
+                    i+=1
+            ALL.append([t,n])
+    except:pass
+    #print(ALL)
+    return ALL
 
-        table = soup.find(class_="cms_list").div
-
-        List_after = []
-        for i in table.pre.contents:
-            if i.string!=None:
-                List_after.append(i.string)
-
-        if ((len(List_after)-3))%2==0:
-            i=3
-            ALL=['【中文名称】',table.contents[1].string,'【拼音名称】',table.contents[3].string,'【英文名称】',table.contents[5].string]+List_after[3:]
-        else:
-            i=4
-            ALL=['【中文名称】', table.contents[1].string, '【拼音名称】', table.contents[3].string, '【英文名称】', table.contents[5].string]+['【简介】',List_after[3]]+List_after[4:]
-        return ALL
-    except:
-        print('查询失败')
-        return None
 
 def creat_String(name):
     try:
         L=get_Meg(name)
         i=0
         tips=''
-        while i<len(L):
-            tips+=f'{L[i]}{L[i+1]}\n'
-            i+=2
-        #print(tips)
-        return tips
-    except:
-        print('查询失败')
-        return None
+        for each in L:
+            tips +=f'{each[0]}{each[1]}\n'
+        print(tips)
 
+        if len(tips)<1800:
+            return tips
+        else:
+            return tips[:1800]
+    except:
+        return "查无此药"
 
 if __name__ == "__main__":
     creat_String('黄柏')

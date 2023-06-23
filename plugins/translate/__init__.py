@@ -22,5 +22,5 @@ def translate(word):
         return '无翻译内容'
 
 if __name__ == '__main__':
-    #translate('背书')
-    fy()
+    translate('背书')
+    #fy()
